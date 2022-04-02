@@ -1,6 +1,5 @@
 const router = require('express').Router();
 
-
 const {
   getCards,
   deleteCardById,
@@ -23,6 +22,5 @@ router.put('/:cardId/likes', putLike);
 
 // DELETE /cards/:cardId/likes
 router.delete('/:cardId/likes', deleteLike);
- 
 
 module.exports = router;
