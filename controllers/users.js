@@ -38,7 +38,7 @@ module.exports.getUserById = (req, res) => {
 module.exports.getUserInfo = (req, res) => {
   const userId = req.user._id;
   User.findById(userId)
-    .then((user) => { 
+    .then((user) => {
       if (!user) {
         res
           .status(404)
