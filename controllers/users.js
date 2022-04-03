@@ -2,14 +2,8 @@ const User = require('../models/user');
 
 module.exports.getUsers = (req, res) => {
   User.find({})
-    .then((users) => {
-      if (!users) {
-        res.status(404).send({ message: 'Пользователь не найден' });
-      } else {
-        res.send({ data: users });
-      }
-    })
-    .catch(() => res.status(500).send({ message: 'Произошла ошибочка' }));
+    .then((users) => res.send({ data: users }))
+    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
 };
 
 module.exports.getUserById = (req, res) => {
@@ -62,6 +56,7 @@ module.exports.updateAvatar = (req, res) => {
     {
       new: true,
       runValidators: true,
+      upsert: false, // если пользователь не найден, он будет создан
     },
   )
     .then((users) => {
@@ -88,6 +83,7 @@ module.exports.updateProfile = (req, res) => {
   User.findByIdAndUpdate(req.user._id, req.body, {
     new: true,
     runValidators: true,
+    upsert: false, // если пользователь не найден, он будет создан
   })
     .then((users) => {
       if (!users) {
