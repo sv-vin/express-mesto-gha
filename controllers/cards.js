@@ -59,20 +59,20 @@ module.exports.putLike = (req, res) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
-    .then((cards) => {
-      if (!cards) {
-        res.status(404).send({ message: 'Передан несуществующий id карточки' });
+    .then((card) => {
+      if (!card) {
+        res
+          .status(404)
+          .send({ message: 'Карточка по переданному id не найдена' });
       } else {
-        res.send({ data: cards });
+        res.send({ data: card });
       }
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res
-          .status(400)
-          .send({ message: 'Переданы некорректные данные для постановки' });
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Невалидный id карточки' });
       } else {
-        res.status(500).send({ message: 'Произошла ошибка' });
+        res.status(500).send({ message: 'Произошла ошибочка' });
       }
     });
 };
@@ -84,20 +84,20 @@ module.exports.deleteLike = (req, res) => {
     { $pull: { likes: req.user._id } },
     { new: true },
   )
-    .then((cards) => {
-      if (!cards) {
-        res.status(404).send({ message: 'Передан несуществующий id карточки' });
+    .then((card) => {
+      if (!card) {
+        res
+          .status(404)
+          .send({ message: 'Карточка по переданному id не найдена' });
       } else {
-        res.send({ data: cards });
+        res.send({ data: card });
       }
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res
-          .status(400)
-          .send({ message: 'Переданы некорректные данные для снятии лайка' });
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Невалидный id карточки' });
       } else {
-        res.status(500).send({ message: 'Произошла ошибка' });
+        res.status(500).send({ message: 'Произошла ошибочка' });
       }
     });
 };
