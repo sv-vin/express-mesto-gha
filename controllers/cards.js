@@ -16,15 +16,13 @@ module.exports.deleteCardById = (req, res) => {
         res.send({ data: cards });
       }
     })
-    .then(() => Card.deleteOne({ _id: cardId })
-      .then(() => res.status(200).send({ message: 'Карточка удалена' })))
+    .then(() => Card.deleteOne({ _id: cardId }).then(() => res.status(200).send({ message: 'Карточка удалена' })))
     .catch((err) => {
       if (err.name === 'CastError') {
         res.status(400).send({ message: 'Невалидный id карточки' });
       } else {
         res.status(500).send({ message: 'Произошла ошибка' });
       }
-      
     });
 };
 
@@ -51,13 +49,13 @@ module.exports.putLike = (req, res) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
-    .then((card) => {
-      if (!card) {
+    .then((cards) => {
+      if (!cards) {
         res
           .status(404)
           .send({ message: 'Карточка по переданному id не найдена' });
       } else {
-        res.send({ data: card });
+        res.send({ data: cards });
       }
     })
     .catch((err) => {
@@ -76,13 +74,13 @@ module.exports.deleteLike = (req, res) => {
     { $pull: { likes: req.user._id } },
     { new: true },
   )
-    .then((card) => {
-      if (!card) {
+    .then((cards) => {
+      if (!cards) {
         res
           .status(404)
           .send({ message: 'Карточка по переданному id не найдена' });
       } else {
-        res.send({ data: card });
+        res.send({ data: cards });
       }
     })
     .catch((err) => {
@@ -92,4 +90,4 @@ module.exports.deleteLike = (req, res) => {
         res.status(500).send({ message: 'Произошла ошибочка' });
       }
     });
-}; 
+};

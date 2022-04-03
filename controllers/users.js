@@ -9,13 +9,13 @@ module.exports.getUsers = (req, res) => {
 module.exports.getUserById = (req, res) => {
   const { userId } = req.params;
   User.findById(userId)
-    .then((user) => {
-      if (!user) {
+    .then((users) => {
+      if (!users) {
         res
           .status(404)
           .send({ message: 'Пользователь по переданному id не найден' });
       } else {
-        res.send({ data: user });
+        res.send({ data: users });
       }
     })
     .catch((err) => {
@@ -30,13 +30,13 @@ module.exports.getUserById = (req, res) => {
 module.exports.getUserInfo = (req, res) => {
   const userId = req.user._id;
   User.findById(userId)
-    .then((user) => {
-      if (!user) {
+    .then((users) => {
+      if (!users) {
         res
           .status(404)
           .send({ message: 'Пользователь по переданному id не найден' });
       } else {
-        res.send({ data: user });
+        res.send({ data: users });
       }
     })
     .catch((err) => {
@@ -58,13 +58,13 @@ module.exports.updateAvatar = (req, res) => {
       runValidators: true,
     },
   )
-    .then((user) => {
-      if (!user) {
+    .then((users) => {
+      if (!users) {
         res
           .status(404)
           .send({ message: 'Пользователь с указанным id не найден' });
       } else {
-        res.send({ data: user });
+        res.send({ data: users });
       }
     })
     .catch((err) => {
@@ -83,13 +83,13 @@ module.exports.updateProfile = (req, res) => {
     new: true,
     runValidators: true,
   })
-    .then((user) => {
-      if (!user) {
+    .then((users) => {
+      if (!users) {
         res
           .status(404)
           .send({ message: 'Пользователь по переданному id не найден' });
       } else {
-        res.send({ data: user });
+        res.send({ data: users });
       }
     })
     .catch((err) => {
