@@ -27,4 +27,4 @@ router.get('/:userId', getUserById);
 // PATCH /users/me/avatar
 router.patch('/me/avatar', updateAvatar);
 
-module.exports = router;
+module.exports = router; 

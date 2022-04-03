@@ -38,7 +38,7 @@ module.exports.getUserById = (req, res) => {
 module.exports.getUserInfo = (req, res) => {
   const userId = req.user._id;
   User.findById(userId)
-    .then((user) => {
+    .then((user) => { 
       if (!user) {
         res
           .status(404)
@@ -87,17 +87,10 @@ module.exports.updateAvatar = (req, res) => {
 };
 
 module.exports.updateProfile = (req, res) => {
-  const { name, about } = req.body;
-  // обновим имя найденного по _id пользователя
-  User.findByIdAndUpdate(
-    req.user._id,
-    { name, about },
-    {
-      new: true, // обработчик then получит на вход обновлённую запись
-      runValidators: true, // данные будут валидированы перед изменением
-      upsert: false, // если пользователь не найден, он будет создан
-    },
-  )
+  User.findByIdAndUpdate(req.user._id, req.body, {
+    new: true,
+    runValidators: true,
+  })
     .then((user) => {
       if (!user) {
         res

@@ -23,7 +23,10 @@ module.exports.deleteCardById = (req, res) => {
       } else {
         res.send({ data: cards });
       }
-    })
+    }) 
+    .then(() => Card.deleteOne({ _id: cardId })
+    .populate('user')
+    .then(() => res.status(Status.SUCCESS).send({ message: 'Карточка удалена' })))
     .catch((err) => {
       if (err.name === 'CastError') {
         res.status(400).send({ message: 'Невалидный id карточки' });
@@ -87,7 +90,7 @@ module.exports.deleteLike = (req, res) => {
       } else {
         res.send({ data: cards });
       }
-    })
+    })  
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res
