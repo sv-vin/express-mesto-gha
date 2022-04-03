@@ -9,43 +9,43 @@ module.exports.getUsers = (req, res) => {
 module.exports.getUserById = (req, res) => {
   const { userId } = req.params;
   User.findById(userId)
-  .then((user) => {
-    if (!user) {
-      res
-        .status(404)
-        .send({ message: 'Пользователь по переданному id не найден' });
-    } else {
-      res.send({ data: user });
-    }
-  })
-  .catch((err) => {
-    if (err.name === 'CastError') {
-      res.status(400).send({ message: 'Невалидный id пользователя' });
-    } else {
-      res.status(500).send({ message: 'Произошла ошибка' });
-    }
-  });
+    .then((user) => {
+      if (!user) {
+        res
+          .status(404)
+          .send({ message: 'Пользователь по переданному id не найден' });
+      } else {
+        res.send({ data: user });
+      }
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Невалидный id пользователя' });
+      } else {
+        res.status(500).send({ message: 'Произошла ошибка' });
+      }
+    });
 };
 
 module.exports.getUserInfo = (req, res) => {
   const userId = req.user._id;
   User.findById(userId)
-  .then((user) => {
-    if (!user) {
-      res
-        .status(404)
-        .send({ message: 'Пользователь по переданному id не найден' });
-    } else {
-      res.send({ data: user });
-    }
-  })
-  .catch((err) => {
-    if (err.name === 'CastError') {
-      res.status(400).send({ message: 'Невалидный id пользователя' });
-    } else {
-      res.status(500).send({ message: 'Произошла ошибка' });
-    }
-  });
+    .then((user) => {
+      if (!user) {
+        res
+          .status(404)
+          .send({ message: 'Пользователь по переданному id не найден' });
+      } else {
+        res.send({ data: user });
+      }
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Невалидный id пользователя' });
+      } else {
+        res.status(500).send({ message: 'Произошла ошибка' });
+      }
+    });
 };
 
 module.exports.updateAvatar = (req, res) => {
@@ -74,7 +74,7 @@ module.exports.updateAvatar = (req, res) => {
 };
 
 module.exports.updateProfile = (req, res) => {
-const { name, about } = req.body;
+  const { name, about } = req.body;
   // обновим имя найденного по _id пользователя
   User.findByIdAndUpdate(
     req.user._id,
@@ -103,17 +103,16 @@ const { name, about } = req.body;
     });
 };
 
-
 module.exports.createUsers = (req, res) => {
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
-  .then((users) => res.send({ data: users })) 
-  // если данные не записались, вернём ошибку
-  .catch((err) => {
-    if (err.name === 'ValidationError') {
-      res.status(400).send({ message: 'Переданы некорректные данные' });
-    } else {
-      res.status(500).send({ message: 'Произошла ошибка' });
-    }
-  });
+    .then((users) => res.send({ data: users }))
+    // если данные не записались, вернём ошибку
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(400).send({ message: 'Переданы некорректные данные' });
+      } else {
+        res.status(500).send({ message: 'Произошла ошибка' });
+      }
+    });
 };
