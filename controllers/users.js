@@ -91,7 +91,8 @@ module.exports.updateProfile = (req, res) => {
           .status(404)
           .send({ message: 'Пользователь по переданному id не найден' });
       } else {
-        res.send({ data: users });
+        res.status(200).send({ data: users });
+        // res.send({ data: users });
       }
     })
     .catch((err) => {
