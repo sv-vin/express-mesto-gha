@@ -8,7 +8,7 @@ module.exports.getCards = (req, res) => {
 
 module.exports.deleteCardById = (req, res) => {
   const { cardId } = req.params;
-  Card.findById(cardId)
+  Card.findByIdAndRemove(cardId)
     .then((cards) => {
       if (!cards) {
         res.status(404).send({ message: 'Карточка с указанным id не найдена' });
@@ -16,7 +16,6 @@ module.exports.deleteCardById = (req, res) => {
         res.send({ data: cards });
       }
     })
-    .then(() => Card.deleteOne({ _id: cardId }).then(() => res.status(200).send({ message: 'Карточка удалена' })))
     .catch((err) => {
       if (err.name === 'CastError') {
         res.status(400).send({ message: 'Невалидный id карточки' });
@@ -60,7 +59,7 @@ module.exports.putLike = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Невалидный id карточки' });
+        res.status(400).send({ message: 'Переданы некорректные данные для постановки лайка' });
       } else {
         res.status(500).send({ message: 'Произошла ошибочка' });
       }
@@ -69,7 +68,7 @@ module.exports.putLike = (req, res) => {
 
 module.exports.deleteLike = (req, res) => {
   const { cardId } = req.params;
-  Card.findByIdAndUpdate(
+  Card.findByIdAndRemove(
     cardId,
     { $pull: { likes: req.user._id } },
     { new: true },
@@ -78,16 +77,16 @@ module.exports.deleteLike = (req, res) => {
       if (!cards) {
         res
           .status(404)
-          .send({ message: 'Карточка по переданному id не найдена' });
+          .send({ message: 'Передан несуществующий _id карточки' });
       } else {
         res.send({ data: cards });
       }
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Невалидный id карточки' });
+        res.status(400).send({ message: 'Переданы некорректные данные для снятии лайка' });
       } else {
-        res.status(500).send({ message: 'Произошла ошибочка' });
+        res.status(500).send({ message: 'Произошла ошибка' });
       }
     });
 };
