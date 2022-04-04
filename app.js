@@ -1,6 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const routesUser = require('./routes/users');
+const routerCard = require('./routes/cards');
 
 const { PORT = 3000 } = process.env;
 
@@ -13,8 +15,8 @@ mongoose.connect('mongodb://localhost:27017/mestodb ', {
   useNewUrlParser: true,
 });
 
-app.use('/users', require('./routes/users'));
-app.use('/cards', require('./routes/cards'));
+app.use(routesUser);
+app.use(routerCard);
 
 app.use((req, res, next) => {
   req.user = {
@@ -24,10 +26,7 @@ app.use((req, res, next) => {
 });
 
 app.use((req, res) => {
-  res.status(404).send({ message: 'Пользователь с указанным id не найден' });
+  res.status(404).send({ message: 'Не корректный URL' });
 });
 
-app.listen(PORT, () => {
-  // Если всё работает, консоль покажет, какой порт приложение слушает
-  // console.log(`App listening on port ${PORT}`);
-});
+app.listen(PORT, () => console.log(`Сервер запущен на порту ${PORT}`));

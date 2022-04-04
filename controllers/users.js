@@ -69,6 +69,7 @@ module.exports.updateAvatar = (req, res) => {
       }
     })
     .catch((err) => {
+      console.dir(err);
       if (err.name === 'ValidationError') {
         res.status(400).send({
           message: 'Переданы некорректные данные при обновлении аватара',
@@ -85,17 +86,19 @@ module.exports.updateProfile = (req, res) => {
     runValidators: true,
     upsert: false, // если пользователь не найден, он будет создан
   })
+  // обновим имя найденного по _id пользователя
+
     .then((users) => {
       if (!users) {
         res
           .status(404)
           .send({ message: 'Пользователь по переданному id не найден' });
       } else {
-        res.status(200).send({ data: users });
-        // res.send({ data: users });
+        res.send({ data: users });
       }
     })
     .catch((err) => {
+      console.dir(err);
       if (err.name === 'ValidationError') {
         res.status(400).send({ message: 'Переданы не корректные данные' });
       } else {
