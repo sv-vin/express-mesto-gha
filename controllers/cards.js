@@ -70,7 +70,8 @@ module.exports.deleteLike = (req, res) => {
   const { cardId } = req.params;
   Card.findByIdAndRemove(
     cardId,
-    { $pull: { likes: req.user._id } },
+    // { $pull: { likes: req.user._id } },
+    { $pull: { likes: cardId } },
     { new: true },
   )
     .then((cards) => {
