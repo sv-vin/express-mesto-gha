@@ -68,10 +68,10 @@ module.exports.putLike = (req, res) => {
 
 module.exports.deleteLike = (req, res) => {
   const { cardId } = req.params;
-  Card.findByIdAndRemove(
+  Card.findByIdAndUpdate(
     cardId,
     // { $pull: { likes: req.user._id } },
-    { $pull: { likes: cardId } },
+    { $pull: { likes: req.user._id } },
     { new: true },
   )
     .then((cards) => {
