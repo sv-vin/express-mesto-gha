@@ -1,34 +1,46 @@
 const express = require('express');
 const mongoose = require('mongoose');
-// const bodyParser = require('body-parser');
+// const cors = require('cors');
+const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
+const { errors } = require('celebrate');
+// const rateLimit = require('express-rate-limit');
+// const helmet = require('helmet');
+
+const auth = require('./middlewares/auth');
+const error = require('./middlewares/error');
+
 const usersRouter = require('./routes/users');
 const cardsRouter = require('./routes/cards');
+const NotFoundError = require('./errors/not-found');
+const { validateAuth } = require('./joi-schemas/user');
 
-const { PORT = 3000 } = process.env;
+const { login, createUser } = require('./controllers/users');
+
+const PORT = process.env.PORT || 3000;
+
 const app = express();
 
-// app.use(bodyParser.json());
-// app.use(bodyParser.urlencoded({ extended: true }));
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-mongoose.connect('mongodb://localhost:27017/mestodb ', {
+mongoose.connect('mongodb://localhost:27017/mestodb', {
   useNewUrlParser: true,
+  // useCreateIndex: true,
+  // useFindAndModify: false,
+});
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
+
+app.use('/users', auth, usersRouter);
+app.use('/cards', auth, cardsRouter);
+
+app.post('/signin', validateAuth, login);
+app.post('/signup', validateAuth, createUser);
+
+app.use(() => {
+  throw new NotFoundError('Ресурс не найден');
 });
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: '6248741a5e2ca84661c0bdd5',
-  };
-  next();
-});
-
-app.use('/users', usersRouter);
-app.use('/cards', cardsRouter);
-
-app.use((req, res) => {
-  res.status(404).send({ message: 'Не корректный URL' });
-});
+app.use(errors());
+app.use(error);
 
 app.listen(PORT);

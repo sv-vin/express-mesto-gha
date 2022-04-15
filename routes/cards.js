@@ -1,4 +1,5 @@
 const router = require('express').Router();
+const { validatePostCard, validateParameter } = require('../joi-schemas/card');
 
 const {
   getCards,
@@ -12,15 +13,15 @@ const {
 router.get('/', getCards);
 
 // DELETE /cards/:cardId
-router.delete('/:cardId', deleteCardById);
+router.delete('/:cardId', validateParameter, deleteCardById);
 
 // POST /cards
-router.post('/', postCard);
+router.post('/', validatePostCard, postCard);
 
 // PUT /cards/:cardId/likes
-router.put('/:cardId/likes', putLike);
+router.put('/:cardId/likes', validateParameter, putLike);
 
 // DELETE /cards/:cardId/likes
-router.delete('/:cardId/likes', deleteLike);
+router.delete('/:cardId/likes', validateParameter, deleteLike);
 
 module.exports = router;
