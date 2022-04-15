@@ -1,27 +1,21 @@
 const router = require('express').Router();
-const { validatePostCard, validateParameter } = require('../joi-schemas/card');
-
+const auth = require('../middlewares/auth');
 const {
-  getCards,
-  deleteCardById,
-  postCard,
-  putLike,
-  deleteLike,
+  createCardValid,
+  parameterIdValid,
+} = require('../middlewares/validationJoi');
+const {
+  getCard,
+  createCard,
+  likeCard,
+  disLikeCard,
+  deleteCard,
 } = require('../controllers/cards');
 
-// GET /cards
-router.get('/', getCards);
-
-// DELETE /cards/:cardId
-router.delete('/:cardId', validateParameter, deleteCardById);
-
-// POST /cards
-router.post('/', validatePostCard, postCard);
-
-// PUT /cards/:cardId/likes
-router.put('/:cardId/likes', validateParameter, putLike);
-
-// DELETE /cards/:cardId/likes
-router.delete('/:cardId/likes', validateParameter, deleteLike);
+router.get('/', auth, getCard);
+router.post('/', auth, createCardValid, createCard);
+router.put('/:cardId/likes', auth, parameterIdValid('cardId'), likeCard);
+router.delete('/:cardId', auth, parameterIdValid('cardId'), deleteCard);
+router.delete('/:cardId/likes', auth, parameterIdValid('cardId'), disLikeCard);
 
 module.exports = router;

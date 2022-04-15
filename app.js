@@ -1,35 +1,38 @@
 const express = require('express');
+const { errors } = require('celebrate');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser');
-const { errors } = require('celebrate');
-require('dotenv').config();
-
-const error = require('./middlewares/error');
-const NotFoundError = require('./errors/not-found');
-const UnauthorizedError = require('./errors/unauthorized');
-
+const routerErrors = require('./routes/errors');
+const { createUser, login } = require('./controllers/users');
 const auth = require('./middlewares/auth');
+const errorHandler = require('./middlewares/errorHandler');
+const { registerValid, loginValid } = require('./middlewares/validationJoi');
+const { requestLogger, errorLoger } = require('./middlewares/logger');
 
-const PORT = process.env.PORT || 3000;
+const { PORT = 3000 } = process.env;
 
 const app = express();
 
-mongoose.connect('mongodb://localhost:27017/mestodb', {
-  useNewUrlParser: true,
-});
+app.use(requestLogger);
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cookieParser());
 
-app.use(auth, (req) => {
-  if (!req.user) {
-    throw new UnauthorizedError('Необходима авторизация');
-  }
-  throw new NotFoundError('Ресурс не найден');
-});
+app.post('/signup', registerValid, createUser);
+app.post('/signin', loginValid, login);
+
+mongoose.connect('mongodb://localhost:27017/mestodb', { useNewUrlParser: true });
+
+app.use('/cards', require('./routes/cards'));
+
+app.use(errorLoger);
+
+app.use(auth);
+
+app.use(routerErrors);
 
 app.use(errors());
-app.use(error);
+
+app.use(errorHandler);
 
 app.listen(PORT);

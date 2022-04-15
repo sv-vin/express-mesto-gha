@@ -1,8 +1,7 @@
 const mongoose = require('mongoose');
-const validator = require('validator');
 const bcrypt = require('bcryptjs');
-
-const UnauthorizedError = require('../errors/unauthorized');
+const { isEmail, isURL } = require('validator');
+const Unauthorized = require('../errors/Unauthorized');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -19,58 +18,41 @@ const userSchema = new mongoose.Schema({
   },
   avatar: {
     type: String,
+    default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
     validate: {
-      validator: (v) => validator.isURL(v),
-      message: 'Неверный формат ссылки.',
+      validator: (v) => isURL(v, { required_protocol: true }),
+      message: "Поле 'avatar' не соответствует формату URL",
     },
-    default:
-      'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
   },
   email: {
     type: String,
     required: true,
     unique: true,
     validate: {
-      validator: (v) => validator.isEmail(v),
+      validator: (v) => isEmail(v),
       message: 'Неправильный формат почты',
     },
   },
   password: {
     type: String,
     required: true,
-    minlength: 8,
     select: false,
   },
 });
 
-// eslint-disable-next-line func-names
-userSchema.pre('save', function (next) {
-  if (!this.isModified('password')) return next();
-
-  return bcrypt
-    .hash(this.password, 10)
-    .then((hash) => {
-      this.password = hash;
-      next();
-    })
-    .catch(next);
-});
-
-// eslint-disable-next-line func-names
 userSchema.statics.findUserByCredentials = function (email, password) {
-  return this.findOne({ email })
-    .select('+password')
-    .then((u) => {
-      if (!u) {
-        throw new UnauthorizedError('Неверный логин или пароль.');
+  return this.findOne({ email }).select('+password')
+    .then((user) => {
+      if (!user) {
+        throw new Unauthorized('Указан некорректный Email или пароль.');
       }
-
-      return bcrypt.compare(password, u.password).then((matched) => {
-        if (!matched) {
-          throw new UnauthorizedError('Неверный логин или пароль.');
-        }
-        return u;
-      });
+      return bcrypt.compare(password, user.password)
+        .then((matched) => {
+          if (!matched) {
+            throw new Unauthorized('Указан некорректный Email или пароль.');
+          }
+          return user;
+        });
     });
 };
 

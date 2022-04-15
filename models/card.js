@@ -1,33 +1,34 @@
 const mongoose = require('mongoose');
-const validator = require('validator');
+const { isURL } = require('validator');
 
 const cardSchema = new mongoose.Schema({
   name: {
     type: String,
+    required: true,
     minlength: 2,
     maxlength: 30,
-    required: true,
   },
   link: {
     type: String,
     required: true,
     validate: {
-      validator: (v) => validator.isURL(v),
-      message: 'Неверный формат ссылки.',
+      validator: (v) => isURL(v, { required_protocol: true }),
+      message: "Поле 'link' не соответствует формату URL",
     },
   },
   owner: {
-    type: mongoose.ObjectId,
-    ref: 'user',
+    type: mongoose.Schema.Types.ObjectId,
     required: true,
+    ref: 'user',
   },
-  likes: {
-    type: [mongoose.ObjectId],
+  likes: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'user',
     default: [],
-  },
+  }],
   createdAt: {
     type: Date,
-    default: Date.now(),
+    default: Date.now,
   },
 });
 
