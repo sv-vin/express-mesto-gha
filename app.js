@@ -23,13 +23,11 @@ app.post('/signin', loginValid, login);
 
 mongoose.connect('mongodb://localhost:27017/mestodb', { useNewUrlParser: true });
 
-app.use('/cards', require('./routes/cards'));
-
-app.use(errorLoger);
-
 app.use(auth);
 
 app.use(routerErrors);
+
+app.use(errorLoger);
 
 app.use(errors());
 

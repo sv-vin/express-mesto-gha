@@ -1,5 +1,6 @@
-const ErrorNotFound = require('../errors/ErrorNotFound');
-const BadRequest = require('../errors/BadRequest');
+const ErrorNotFound = require('../errors/errorNotFound');
+const BadRequest = require('../errors/badRequest');
+const ForbiddenError = require('../errors/forbidden');
 const Cards = require('../models/card');
 
 module.exports.getCard = (req, res, next) => {
@@ -69,19 +70,23 @@ module.exports.disLikeCard = (req, res, next) => {
 };
 
 module.exports.deleteCard = (req, res, next) => {
-  Cards.findByIdAndRemove(req.params.cardId)
-    .orFail(() => {
-      throw new ErrorNotFound('Карточка не найдена');
-    })
+  const { cardId } = req.params;
+  Cards.findById(cardId)
     .then((card) => {
       if (!card) {
-        next(new ErrorNotFound('Карточка не найдена'));
+        throw new ErrorNotFound('Карточка с указанным _id не найдена');
       }
-      res.status(200).send({ data: card, message: 'Карточка удалена' });
+      if (card.owner !== req.user._id) {
+        throw new ForbiddenError('Запрещено удалять чужие карточки');
+      }
     })
+    .then(() => Cards.deleteOne({ _id: cardId })
+      .then(() => res.status(200).send({ message: 'Карточка удалена' })))
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new BadRequest({ message: 'Переданы некорректные данные' }));
+        next(
+          new BadRequest('При удалении карточки передан некорректный _id'),
+        );
       }
       next(err);
     });
